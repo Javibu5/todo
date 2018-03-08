@@ -18,7 +18,10 @@ class TaskController extends Controller
      */
     public function index(TaskRepository $repository)
     {
-        $tasks = $repository->findAll();
+        $user =$this->getUser();
+        $tasks = $repository->findBy([
+            'ower' => $user,
+        ]);
 
 
         return $this->render('task/index.html.twig', [
