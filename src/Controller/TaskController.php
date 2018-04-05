@@ -3,9 +3,12 @@
 namespace App\Controller;
 
 use App\Entity\Task;
+use App\Event\TaskEvent;
 use App\Form\TaskType;
 use App\Repository\TaskRepository;
+use App\Services\Message;
 use function PHPSTORM_META\type;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -34,8 +37,10 @@ class TaskController extends Controller
      * @Route("/task/new" , name = "task_new")
      *
      */
-    public function new(Request $request)
+    public function new(Request $request , EventDispatcherInterface $dispatcher)
     {
+
+
         $user = $this->getUser();
         $task = new Task();
         $task->setOwner($user);
@@ -48,7 +53,7 @@ class TaskController extends Controller
             $om->flush();
 
             $this->addFlash('positive' , "taskita creadita");
-
+            $dispatcher->dispatch("task.created" , new TaskEvent($task));
             return $this->redirectToRoute('homepage');
 
         }
@@ -63,7 +68,6 @@ class TaskController extends Controller
     public function edit(Request $request , Task $task)
     {
         $this->denyAccessUnlessGranted('EDIT' ,$task);
-
 
         $form = $this->createForm(TaskType::class , $task) ;
         $form->handleRequest($request);

@@ -160,4 +160,22 @@ class User implements UserInterface , \Serializable
             // $this->salt
             ) = unserialize($serialized);
     }
+
+    public function __toString()
+    {
+        return $this->username;
+    }
+
+      public function getEmail()
+      {
+        return "{$this->username}xxx@uco.es";
+      }
+    /**
+     * @return mixed
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
 }
